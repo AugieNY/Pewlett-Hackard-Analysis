@@ -1,0 +1,27 @@
+-- Create a new table to get the age and employment length of the employees. 
+-- Add a column based on birth date (retiring vs retaining)
+-- Add the salary information to each employee
+
+SELECT DISTINCT ON (employees.emp_no) employees.emp_no,
+employees.first_name,
+employees.last_name,
+title,
+DATE_PART('year',employees.birth_date) as Birth_year,
+DATE_PART('year', now()) - DATE_PART('year', employees.birth_date) as Age,
+DATE_PART('year', now()) - DATE_PART('year', employees.hire_date) as employment_length,
+CASE 
+WHEN DATE_PART('year',employees.birth_date) BETWEEN 1952 AND 1955 THEN 'Retiring'
+WHEN DATE_PART('year',employees.birth_date) > 1955 THEN 'Retaining'
+END as "employment_status",
+CASE
+WHEN DATE_PART('year', now()) - DATE_PART('year', employees.hire_date) <= 2 THEN 'New'
+WHEN DATE_PART('year', now()) - DATE_PART('year', employees.hire_date) BETWEEN 3 AND 8 THEN 'Mid-experience'
+WHEN DATE_PART('year', now()) - DATE_PART('year', employees.hire_date) > 8 THEN 'Experienced'
+END as "employment_category",
+salaries.salary as salary
+
+INTO employees_details_full
+FROM employees 
+JOIN "Title" ON employees.emp_no = "Title".emp_no
+JOIN "salaries" ON employees.emp_no = salaries.emp_no
+
